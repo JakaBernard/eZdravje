@@ -72,6 +72,8 @@ function kreirajEHRzaBolnika() {//koda iz vaj
 	}
 }
 
+
+
 /**
  * Generator podatkov za novega pacienta, ki bo uporabljal aplikacijo. Pri
  * generiranju podatkov je potrebno najprej kreirati novega pacienta z
@@ -80,6 +82,7 @@ function kreirajEHRzaBolnika() {//koda iz vaj
  * @param stPacienta zaporedna številka pacienta (1, 2 ali 3)
  * @return ehrId generiranega pacienta
  */
+ 
 function generirajPodatke(stPacienta) {
   ehrId = "";
 
