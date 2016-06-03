@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>eZdravje :: 4. DN :: OIS 2015/2016</title>
+  <script src="knjiznice/js/jquery-2.2.3.min.js" type="text/javascript"></script>
   <link href="knjiznice/css/bootstrap.min.css" rel="stylesheet">
-  <script src="knjiznice/js/jquery-2.2.3.min.js"></script>
-  <script src="knjiznice/js/bootstrap.min.js"></script>
-  <script src="knjiznice/js/koda.js"></script>
+  <link href="knjiznice/css/stili.css" rel="stylesheet">
+  <script src="knjiznice/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="knjiznice/js/Donut3D.js" type="text/javascript"></script>
+  <script src="knjiznice/js/koda.js" type="text/javascript"></script>
   <!-- tud kopija iz vaj -->
   <style>
 		body {padding: 10px;
@@ -29,14 +32,14 @@
           <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
         </button>
         <!-- ZAČETEK: Ime vaše aplikacije -->
-        <a class="navbar-brand" href="index.html">Perpetual motion thingamabob</a>
+        <a class="navbar-brand" href="index.html">Zdravniški Svetovalec</a>
         <!-- KONEC: Ime vaše aplikacije -->
       </div>
       <div class="collapse navbar-collapse" id="menujska-vrstica">
         <ul class="nav navbar-nav">
           <li><a href="opis.html">Opis ideje</a></li>
           <li><a href="nacrt.html">Načrt informacijske rešitve</a></li>
-          <li><a href="#">Generiranje podatkov</a></li>
+          <li><a href="#" onclick="generiranjeTrehPrimerkov()">Generiranje podatkov</a></li>
         </ul>
       </div>
     </div>
@@ -50,12 +53,12 @@
 					<div class="panel-heading">
 						<div class="row">
 							<div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega bolnika</div>
-							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika"><option value=""></option><option value="Pujsa,Pepa,1938-10-30T14:58">Pujsa Pepa</option></select></div> <!-- ze prej narejeni ljudje - FIX!! -->
+							<!-- <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika"><option value=""></option><option value="Pujsa,Pepa,1938-10-30T14:58">Pujsa Pepa</option></select></div>  ze prej narejeni ljudje - FIX!! -->
 						</div>
 					</div>
 					<div class="panel-body">
-						<span class="label label-default">Ime</span><input id="kreirajIme" type="text" class="form-control input-mini" placeholder="Osama">
-						<span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text" class="form-control" placeholder="Bin Laden">
+						<span class="label label-default">Ime</span><input id="kreirajIme" type="text" class="form-control input-mini" placeholder="Ludvik">
+						<span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text" class="form-control" placeholder="Heideger">
 						<span class="label label-default">Datum rojstva</span><input id="kreirajDatumRojstva" type="text" class="form-control" placeholder="1957-03-10T09:08">
 						<button type="button" class="btn btn-primary btn-xs" onclick="kreirajEHRzaBolnika()">Dodaj osnovne podatke o bolniku</button><span id="kreirajSporocilo"></span>
 				  	</div>
@@ -66,7 +69,7 @@
 					<div class="panel-heading">
 						<div class="row">
 							<div class="col-lg-8 col-md-8 col-sm-8"><b>Preberi EHR zapis</b> obstoječega bolnika</div>
-							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiObstojeciEHR"><option value=""></option><option value="254f791d-2e7c-49d9-b646-376f62d6ead5">Dejan Lavbič</option><option value="d564c6a3-5a43-4fcc-bfa7-9ac76e9673bd">Pujsa Pepa</option><option value="b931580f-2b05-488b-985b-8d9ffb08ad02">Ata Smrk</option></select></div><!-- ze prej narejeni ljudje - FIX!! -->
+							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiObstojeciEHR"><option value=""></option><option value="7d56e1f5-46e1-4dc3-ba3d-c19cabf19bcf">Jožef Kralj</option><option value="cd705fdf-4d1a-46d6-9b63-7d7ee1aefe38"</option>An Žemur<option value="7bb45496-69fe-4c11-9bd9-6da7afd8d141">Horest Hump</option></select></div><!-- ze prej narejeni ljudje - FIX!! -->
 						</div>
 					</div>
 					<div class="panel-body">
