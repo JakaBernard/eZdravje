@@ -488,7 +488,6 @@ function generiranjeTrehPrimerkov() {
 }
 
 function generirajPodatke(stPacienta) {
- ehrId = "";
 	switch(stPacienta){
 		case 1 :
 			ehrId += kreirajCustom("Jožef", "Kralj", "1969-04-20T04:20");
@@ -502,8 +501,6 @@ function generirajPodatke(stPacienta) {
 	}
 	
   // TODO: Potrebno implementirati
-
-  return ehrId;
 }
 
 function kreirajCustom(imeIn, priimekIn, datumRojstvaIn) {
@@ -825,8 +822,5 @@ function getRandomColor() {//google is key
     return color;
 }
 
-function twitterChange() {
-	
-}
 
 // TODO: Tukaj implementirate funkcionalnost, ki jo podpira vaša aplikacija
