@@ -172,7 +172,8 @@ function dodajMeritveVitalnihZnakov() {
 	}
 }
 
-var tlakGraf = [];
+var masaPart = [];
+var visinaPart = [];
 var BMIGraf = [];
 var temperaturaGraf = [];
 var kisikGraf = [];
@@ -239,14 +240,17 @@ function preberiMeritveVitalnihZnakov() {//to se klice, da dobis temperaturo ipd
 					    type: 'GET',
 					    headers: {"Ehr-Session": sessionId},
 					    success: function (res) {
+					    	masaPart = [];
 					    	if (res.length > 0) {
 						    	var results = "<table class='table table-striped " +
                     			"table-hover'><tr><th>Datum in ura</th>" +
                     			"<th class='text-right'>Telesna teža</th></tr>";
 						        for (var i in res) {
+						        	tempMass = res[i].weight;
+						        	masaPart.push(tempMass);
 						            results += "<tr><td>" + res[i].time +
                         		"</td><td class='text-right'>" + res[i].weight + " " 	+
-                          res[i].unit + "</td>";
+                        		 res[i].unit + "</td>";
 						        }
 						        results += "</table>";
 						        $("#rezultatMeritveVitalnihZnakov").append(results);
@@ -259,7 +263,77 @@ function preberiMeritveVitalnihZnakov() {//to se klice, da dobis temperaturo ipd
 					    error: function() {
 					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
                 			"<span class='obvestilo label label-danger fade-in'>Napaka '" +
-                  JSON.parse(err.responseText).userMessage + "'!");
+                		JSON.parse(err.responseText).userMessage + "'!");
+					    }
+					});
+					setTimeout( function(){
+						$.ajax({
+							url: baseUrl + "/view/" + ehrId + "/" + "height",
+					    	type: 'GET',
+					    	headers: {"Ehr-Session": sessionId},
+					    	success: function (res) {
+					    		if (res.length > 0) {
+					    			visinaPart = [];
+						        	for (var i in res) {
+						        	 tempVis = res[i].height;
+						      		 visinaPart.push(tempVis);
+						        	 //BMIGraf.push(masaPart/((visinaPart[i])*(visinaPart[i])));
+						        	}
+						        	setTimeout(function() {
+						        		for(var i in res){
+						        			BMIGraf.push(masaPart[i]*10000/((visinaPart[i])*(visinaPart[i])));
+						        		}
+						        		setTimeout(function(){prikaziGraf(BMIGraf, 2)}, 200);
+						        	}, 100);
+						        	//console.log(masaPart);
+						        	//console.log(visinaPart);
+						        	
+						        	
+					    		} else {
+					    		
+					    		}
+						 },
+					    	error: function() {
+					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                				"<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			JSON.parse(err.responseText).userMessage + "'!");
+						 }
+							})
+						}
+						, 100);
+					
+					
+				} else if (tip == "kisik v krvi") {
+					$.ajax({
+  					    url: baseUrl + "/view/" + ehrId + "/" + "spO2",
+					    type: 'GET',
+					    headers: {"Ehr-Session": sessionId},
+					    success: function (res) {
+					    	if (res.length > 0) {
+					    		kisikGraf = [];
+						    	var results = "<table class='table table-striped " +
+                    			"table-hover'><tr><th>Datum in ura</th>" +
+                				 "<th class='text-right'>Nasičenost krvi s kisikom</th></tr>";
+						        for (var i in res) {
+						        	//console.log(res);
+						            results += "<tr><td>" + res[i].time +
+                        			 "</td><td class='text-right'>" + res[i].spO2 +
+                        			 " %" + "</td>";
+                        			kisikGraf.push(res[i].spO2);
+						        }
+						        results += "</table>";
+						        $("#rezultatMeritveVitalnihZnakov").append(results);
+						        prikaziGraf(kisikGraf, 3);//tukej nej bi se pol izvedlo, da se prikaze graf al neki
+					    	} else {
+					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                    			"<span class='obvestilo label label-warning fade-in'>" +
+                				 "Ni podatkov!</span>");
+					    	}
+					    },
+					    error: function() {
+					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                			 "<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			 JSON.parse(err.responseText).userMessage + "'!");
 					    }
 					});
 				}
@@ -518,10 +592,10 @@ function generirajRandomVnose(ehrIn) {
 
 }
 
-function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = tlak
+function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = kisik
 	if(tabelaPodatkov.length > 0){
 		var procenti = [];
-		var temperaturaZaPrikaz = [];
+		var podatkiZaPrikaz = [];
 		var salesData = [];
 		var grupePodatkov = [];
 		$('#legenda').html("");
@@ -562,44 +636,123 @@ function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = t
 			console.log(c2*100/c4);
 			procenti.push(c3*100/c4);
 			console.log(c3*100/c4);
-		} else if(tip == 2) {
 			
-			
-		} else if (tip == 3) {
-			
-			
-		}
-		
-		for(i in procenti) {
-			if(procenti[i] > 0) {
-				if(procenti[i] == 100.00){
-					procenti[i] = 99.0;
-				}
-				var barva = getRandomColor();
-				var dataSales = {color: barva, value: procenti[i]};
-				salesData.push(dataSales);
-				var podatkiTemp = {color: barva, value: i};
-				temperaturaZaPrikaz.push(podatkiTemp);
+		} else if(tip == 2) {//wikipedia ftw
+			grupePodatkov = ["Huda nedohranjenost (<= 16.0)", "Zmerna nedohranjenost (16.0-17.0)", "Blaga nedohranjenost (17.0-18.5)", "Normalna telesna masa (18.5-25.0)", "Zvečana telesna masa (preadipoznost) (25.0-30.0)", "Debelost stopnje I (30.0-35.0)", "Debelost stopnje II (35.0-40.0)", "Debelost stopnje III (>= 40.0)"];
+			var counter = [];
+			var cBMI = 0;
+			for(var j in grupePodatkov) {
+				procenti[j] = 0;
+				counter[j] = 0;
 			}
+			//console.log("dat counter doe: "+counter);
+			setTimeout(function() {
+				for(var i in tabelaPodatkov) {
+						cBMI++;
+					if(tabelaPodatkov[i] <= 16.0){
+						counter[0]++;
+						//console.log("add c0");
+					}else if(tabelaPodatkov[i] > 16.0 && tabelaPodatkov[i] <= 17.0) {
+						counter[1]++;
+						//console.log("add c1");
+					}else if(tabelaPodatkov[i] > 17.0 && tabelaPodatkov[i] <= 18.5){
+						counter[2]++;
+						//console.log("add c2");
+					}else if(tabelaPodatkov[i] > 18.5 && tabelaPodatkov[i] <= 25.0){
+						counter[3]++;
+						//console.log("add c3");
+					}else if(tabelaPodatkov[i] > 25.0 && tabelaPodatkov[i] <= 30.0){
+						counter[4]++;
+						//console.log("add c4");
+					}else if(tabelaPodatkov[i] > 30.0 && tabelaPodatkov[i] <= 35.0){
+						counter[5]++;
+						//console.log("add c5");
+					}else if(tabelaPodatkov[i] > 35.0 && tabelaPodatkov[i] <= 40.0){
+						counter[6]++;
+						//console.log("add c6");
+					}else if(tabelaPodatkov[i] > 40.0){
+						counter[7]++;
+						//console.log("add c7");
+					}
+				}
+				setTimeout(function(){
+					for(var i in counter){
+						procenti[i] = (counter[i]*100/cBMI);
+					}
+				}, 100);
+			}, 300);
+		} else if (tip == 3) {
+			grupePodatkov = ["Nevarno nizek nivo kisika (<=92)", "Nizek nivo kisika (92-94)", "Normalen nivo kisika(94-99)"];
+			var counter = [];
+			var vseMeritve = 0;
+			for(j in grupePodatkov) {
+				procenti[j] = 0;
+				counter[j] = 0;
+			}
+			
+			setTimeout(function() {
+				for(i in tabelaPodatkov){
+					//console.log(tabelaPodatkov[i]);
+					if(tabelaPodatkov[i] <= 92){
+						counter[0]++;
+					} else if (tabelaPodatkov[i] >= 94) {
+						counter[2]++;
+					} else {
+						counter[1]++;
+					}
+					vseMeritve++;
+				}
+				setTimeout(function(){
+					for(var i in counter){
+						procenti[i] = (counter[i]*100/vseMeritve);
+					}
+				}, 150);
+			}, 100);
 		}
+		setTimeout(function() {
+			//console.log("procenti: "+procenti);
+		    for(var j in procenti) {
+				if(procenti[j] > 0) {
+					if(procenti[j] == 100.00){
+						procenti[j] = 99.0;
+					}
+					var barva = getRandomColor();
+					//console.log("barva " + j +": "+barva);
+					var dataSales = {color: barva, value: procenti[j]};
+					//console.log("dataSales " + j +": " + dataSales);
+					salesData.push(dataSales);
+					//console.log("salesData " + j +": "+salesData);
+					var podatkiTemp = {color: barva, value: j};
+					//console.log("podatkiTemp " + j +": "+podatkiTemp);
+					podatkiZaPrikaz.push(podatkiTemp);
+					//console.log("podatkiZaPrikaz " + j +": "+podatkiZaPrikaz);
+				}
+			}
+			//console.log(podatkiZaPrikaz);
+		}, 500);
 		
-		var svg = d3.select("#DonutGraf").append("svg").attr("width",700).attr("height",300);//change ID
-		svg.append("g").attr("id", "DataDonut");
-		Donut3D.draw("DataDonut", nakljucniPodatki(), 150, 150, 130, 100, 30, 0.4);
-		var dodano = "";
+		setTimeout(function() {
+			//console.log("RISEM GRAF AL NEKI!");
+			//console.log(salesData);
+			//console.log(grupePodatkov);
+			//console.log(podatkiZaPrikaz);
+			var svg = d3.select("#DonutGraf").append("svg").attr("width",700).attr("height",300);//change ID
+			svg.append("g").attr("id", "DataDonut");
+			Donut3D.draw("DataDonut", nakljucniPodatki(), 150, 150, 130, 100, 30, 0.4);
+			var dodano = "";
 		
 		
-		for(i in temperaturaZaPrikaz) {
-			dodano += "<tr><td style='color:white; background-color:"+ temperaturaZaPrikaz[i].color 
-			+ "'>" + grupePodatkov[temperaturaZaPrikaz[i].value] +
-            "</td>";
-		}
-		$('#legenda').html(dodano);
-		
-		function nakljucniPodatki(){
-		return salesData.map(function(d){ 
-			return {value:d.value, color:d.color};});
-		}
+			for(j in podatkiZaPrikaz) {
+				dodano += "<tr><td style='color:white; background-color:"+ podatkiZaPrikaz[j].color 
+				+ "'>" + grupePodatkov[podatkiZaPrikaz[j].value] +
+        	    "</td>";
+			}
+			$('#legenda').html(dodano);
+		}, 550);
+			function nakljucniPodatki(){
+				return salesData.map(function(d){ 
+					return {value:d.value, color:d.color};});
+			}
 	}
 }
 
