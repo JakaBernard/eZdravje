@@ -394,7 +394,73 @@ function preberiMeritveVitalnihZnakov() {//to se klice, da dobis temperaturo ipd
                 			 JSON.parse(err.responseText).userMessage + "'!");
 					    }
 					});
-				}
+				} else if (tip == "diastolicni tlak") {
+					$.ajax({
+  					    url: baseUrl + "/view/" + ehrId + "/" + "blood_pressure",
+					    type: 'GET',
+					    headers: {"Ehr-Session": sessionId},
+					    success: function (res) {
+					    	if (res.length > 0) {
+					    		kisikGraf = [];
+						    	var results = "<table class='table table-striped " +
+                    			"table-hover'><tr><th>Datum in ura</th>" +
+                				 "<th class='text-right'>Diastolični tlak krvi</th></tr>";
+						        for (var i in res) {
+						        	//console.log(res);
+						            results += "<tr><td>" + res[i].time +
+                        			 "</td><td class='text-right'>" + res[i].diastolic +
+                        			 " mm/Hg" + "</td>";
+                        			kisikGraf.push(res[i].diastolic);
+						        }
+						        results += "</table>";
+						        $("#rezultatMeritveVitalnihZnakov").append(results);
+						        prikaziGraf(kisikGraf, 4);//tukej nej bi se pol izvedlo, da se prikaze graf al neki
+					    	} else {
+					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                    			"<span class='obvestilo label label-warning fade-in'>" +
+                				 "Ni podatkov!</span>");
+					    	}
+					    },
+					    error: function() {
+					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                			 "<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			 JSON.parse(err.responseText).userMessage + "'!");
+					    }
+					});
+				} else if (tip == "sistolicni tlak") {
+					$.ajax({
+  					    url: baseUrl + "/view/" + ehrId + "/" + "blood_pressure",
+					    type: 'GET',
+					    headers: {"Ehr-Session": sessionId},
+					    success: function (res) {
+					    	if (res.length > 0) {
+					    		kisikGraf = [];
+						    	var results = "<table class='table table-striped " +
+                    			"table-hover'><tr><th>Datum in ura</th>" +
+                				 "<th class='text-right'>Sistolični tlak krvi</th></tr>";
+						        for (var i in res) {
+						        	//console.log(res);
+						            results += "<tr><td>" + res[i].time +
+                        			 "</td><td class='text-right'>" + res[i].systolic +
+                        			 " mm/Hg" + "</td>";
+                        			kisikGraf.push(res[i].systolic);
+						        }
+						        results += "</table>";
+						        $("#rezultatMeritveVitalnihZnakov").append(results);
+						        prikaziGraf(kisikGraf, 5);//tukej nej bi se pol izvedlo, da se prikaze graf al neki
+					    	} else {
+					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                    			"<span class='obvestilo label label-warning fade-in'>" +
+                				 "Ni podatkov!</span>");
+					    	}
+					    },
+					    error: function() {
+					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
+                			 "<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			 JSON.parse(err.responseText).userMessage + "'!");
+					    }
+					});
+				} 
 	    	},
 	    	error: function(err) {
 	    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
@@ -647,7 +713,7 @@ function generirajRandomVnose(ehrIn) {
 
 }
 
-function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = kisik
+function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = kisik, 4 diastolicni tlak, 5 sistolicni tlak
 	if(tabelaPodatkov.length > 0){
 		var procenti = [];
 		var podatkiZaPrikaz = [];
@@ -736,7 +802,65 @@ function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = k
 					}
 				}, 100);
 			}, 300);
-		} else if (tip == 3) {
+		} else if (tip == 4) {
+			grupePodatkov = ["Nizek diastolični tlak (40-60)", "Normalen diastolični tlak (60-80)", "Pred-visok diastollični tlak(80-90)", "Visok diastollični tlak(90-100)"];
+			var counter = [];
+			var vseMeritve = 0;
+			for(j in grupePodatkov) {
+				procenti[j] = 0;
+				counter[j] = 0;
+			}
+			
+			setTimeout(function() {
+				for(i in tabelaPodatkov){
+					//console.log(tabelaPodatkov[i]);
+					if(tabelaPodatkov[i] <= 60){
+						counter[0]++;
+					} else if (tabelaPodatkov[i] >= 80 && tabelaPodatkov[i] < 90) {
+						counter[2]++;
+					} else if (tabelaPodatkov[i] > 60 && tabelaPodatkov[i] < 80){
+						counter[1]++;
+					} else {
+						counter[3]++;
+					}
+					vseMeritve++;
+				}
+				setTimeout(function(){
+					for(var i in counter){
+						procenti[i] = (counter[i]*100/vseMeritve);
+					}
+				}, 150);
+			}, 100);
+		} else if (tip == 5) {
+			grupePodatkov = ["Nizek sistolični tlak (70-90)", "Normalen sistolični tlak (90-120)", "Pred-visok sistolični tlak(120-140)", "Visok sistolični tlak(140-190)"];
+			var counter = [];
+			var vseMeritve = 0;
+			for(j in grupePodatkov) {
+				procenti[j] = 0;
+				counter[j] = 0;
+			}
+			
+			setTimeout(function() {
+				for(i in tabelaPodatkov){
+					//console.log(tabelaPodatkov[i]);
+					if(tabelaPodatkov[i] <= 90){
+						counter[0]++;
+					} else if (tabelaPodatkov[i] >= 120 && tabelaPodatkov[i] < 140) {
+						counter[2]++;
+					} else if (tabelaPodatkov[i] > 90 && tabelaPodatkov[i] < 120){
+						counter[1]++;
+					} else {
+						counter[3]++;
+					}
+					vseMeritve++;
+				}
+				setTimeout(function(){
+					for(var i in counter){
+						procenti[i] = (counter[i]*100/vseMeritve);
+					}
+				}, 150);
+			}, 100);
+		}else if (tip == 3) {
 			grupePodatkov = ["Nevarno nizek nivo kisika (<=92)", "Nizek nivo kisika (92-94)", "Normalen nivo kisika(94-99)", "Nenaraven nivo kisika (>= 100)"];
 			var counter = [];
 			var vseMeritve = 0;
@@ -766,6 +890,7 @@ function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = k
 				}, 150);
 			}, 100);
 		}
+		
 		setTimeout(function() {
 			//console.log("procenti: "+procenti);
 		    for(var j in procenti) {
