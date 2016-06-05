@@ -115,7 +115,10 @@ function preberiEHRodBolnika() {
  */
 function dodajMeritveVitalnihZnakov() {//#obvestila vnos
 	sessionId = getSessionId();
-
+	
+	$("#obvestilaVnos").html("");
+	$("#twitterFeed").html("");
+	
 	var ehrId = $("#dodajVitalnoEHR").val();
 	var datumInUra = $("#dodajVitalnoDatumInUra").val();
 	var telesnaVisina = $("#dodajVitalnoTelesnaVisina").val();
@@ -125,8 +128,7 @@ function dodajMeritveVitalnihZnakov() {//#obvestila vnos
 	var diastolicniKrvniTlak = $("#dodajVitalnoKrvniTlakDiastolicni").val();
 	var nasicenostKrviSKisikom = $("#dodajVitalnoNasicenostKrviSKisikom").val();
 	var merilec = $("#dodajVitalnoMerilec").val();
-	$("#obvestilaVnos").html("");
-	$("#twitterFeed").html("");
+	
 	if (!ehrId || ehrId.trim().length == 0) {
 		$("#dodajMeritveVitalnihZnakovSporocilo").html("<span class='obvestilo " +
       "label label-warning fade-in'>Prosim vnesite zahtevane podatke!</span>");
@@ -138,41 +140,41 @@ function dodajMeritveVitalnihZnakov() {//#obvestila vnos
 		if((indeksTM > 18.5 && indeksTM <= 25.0) && (telesnaTemperatura <= 37.2 && telesnaTemperatura >= 35.8) &&(sistolicniKrvniTlak >= 90 && sistolicniKrvniTlak <= 120) && (diastolicniKrvniTlak <= 80 && diastolicniKrvniTlak >= 60) && (nasicenostKrviSKisikom >= 94 && nasicenostKrviSKisikom <= 100)){
 			$("#obvestilaVnos").html("BRAVO! Zdravi ste kot riba! :)");
 			
-			tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/HealthyLifestyle" data-widget-id="739410565840416768">#HealthyLifestyle Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+			tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/HealthyLifestyle" data-widget-id="739410565840416768">#HealthyLifestyle Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			//console.log(tweet);
 		} else {
 			venPrint = "<table class='table table-striped " + "table-hover'>";
 			$("#obvestilaVnos").html("<b>Ojej! Kakor izgleda, imate sledeče težave z zdravjem:</b>");
 			if(indeksTM <= 18.5){
 				venPrint += "<tr><td>Premajhen indeks telesne mase</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/anorexia" data-widget-id="739411049942765568">#anorexia Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/anorexia" data-widget-id="739411049942765568">#anorexia Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} else if (indeksTM > 25.0) {
 				venPrint += "<tr><td>Prevelik indeks telesne mase</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/weightloss" data-widget-id="739411438423400448">#weightloss Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/weightloss" data-widget-id="739411438423400448">#weightloss Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			}
 			if (telesnaTemperatura > 37.2) {
 				venPrint += "<tr><td>Povečana telesna temperatura</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/sick" data-widget-id="739412234586214401">#sick Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/sick" data-widget-id="739412234586214401">#sick Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} else if (telesnaTemperatura < 35.8) {
 				venPrint += "<tr><td>Znižana telesna temperatura</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/cold" data-widget-id="739412663038582784">#cold Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/cold" data-widget-id="739412663038582784">#cold Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			}
 			if ((sistolicniKrvniTlak < 90 && diastolicniKrvniTlak > 80) || (sistolicniKrvniTlak > 120) && (diastolicniKrvniTlak < 60)) {
 				venPrint += "<tr><td>Imate hkrati prenizek in previsok krvni tlak. Nekaj je resno narobe z vami...</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} else if ((sistolicniKrvniTlak < 90 || diastolicniKrvniTlak < 60)) {
 				venPrint += "<tr><td>Znižan krvni tlak</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} else if ((sistolicniKrvniTlak > 120 || diastolicniKrvniTlak > 80)) {
 				venPrint += "<tr><td>Zvišan krvni tlak</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/stress" data-widget-id="739413811535466500">#stress Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} 
 			if (nasicenostKrviSKisikom < 94) {
 				venPrint += "<tr><td>Znižan nivo kisika v krvi</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/BadBlood" data-widget-id="739414574630342656">#BadBlood Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/BadBlood" data-widget-id="739414574630342656">#BadBlood Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			} else if (nasicenostKrviSKisikom > 100) {
 				venPrint += "<tr><td>Previsok nivo kisika v krvi (fizikalno nemogoče!)</td></tr>";
-				tweet += '<a class="twitter-timeline" href="https://twitter.com/hashtag/howamigoingtosurvivetoday" data-widget-id="739414895490404352">#howamigoingtosurvivetoday Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
+				tweet += ' <a class="twitter-timeline" href="https://twitter.com/hashtag/howamigoingtosurvivetoday" data-widget-id="739414895490404352">#howamigoingtosurvivetoday Tweets</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>';
 			}
 			venPrint += "<tr><td><b>Predlog:</b> Posvetujte se z zdravnikom</td></tr></table>";
 			
@@ -183,9 +185,6 @@ function dodajMeritveVitalnihZnakov() {//#obvestila vnos
 			//console.log(tweet);
 			$("#twitterFeed").html(tweet);
 		}, 200);
-		
-		
-		
 		
 		
 		
