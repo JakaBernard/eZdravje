@@ -172,14 +172,17 @@ function dodajMeritveVitalnihZnakov() {
 	}
 }
 
-
+var tlakGraf = [];
+var BMIGraf = [];
+var temperaturaGraf = [];
+var kisikGraf = [];
 /**
  * Pridobivanje vseh zgodovinskih podatkov meritev izbranih vitalnih znakov
  * (telesna temperatura, filtriranje telesne temperature in telesna teža).
  * Filtriranje telesne temperature je izvedena z AQL poizvedbo, ki se uporablja
  * za napredno iskanje po zdravstvenih podatkih.
  */
-function preberiMeritveVitalnihZnakov() {
+function preberiMeritveVitalnihZnakov() {//to se klice, da dobis temperaturo ipd.!!!
 	sessionId = getSessionId();
 
 	var ehrId = $("#meritveVitalnihZnakovEHRid").val();
@@ -196,8 +199,8 @@ function preberiMeritveVitalnihZnakov() {
 	    	success: function (data) {
 				var party = data.party;
 				$("#rezultatMeritveVitalnihZnakov").html("<br/><span>Pridobivanje " +
-          "podatkov za <b>'" + tip + "'</b> bolnika <b>'" + party.firstNames +
-          " " + party.lastNames + "'</b>.</span><br/><br/>");
+        		"podatkov za <b>'" + tip + "'</b> bolnika <b>'" + party.firstNames +
+        		" " + party.lastNames + "'</b>.</span><br/><br/>");
 				if (tip == "telesna temperatura") {
 					$.ajax({
   					    url: baseUrl + "/view/" + ehrId + "/" + "body_temperature",
@@ -205,26 +208,29 @@ function preberiMeritveVitalnihZnakov() {
 					    headers: {"Ehr-Session": sessionId},
 					    success: function (res) {
 					    	if (res.length > 0) {
+					    		temperaturaGraf = [];
 						    	var results = "<table class='table table-striped " +
-                    "table-hover'><tr><th>Datum in ura</th>" +
-                    "<th class='text-right'>Telesna temperatura</th></tr>";
+                    			"table-hover'><tr><th>Datum in ura</th>" +
+                				 "<th class='text-right'>Telesna temperatura</th></tr>";
 						        for (var i in res) {
 						            results += "<tr><td>" + res[i].time +
-                          "</td><td class='text-right'>" + res[i].temperature +
-                          " " + res[i].unit + "</td>";
+                        			 "</td><td class='text-right'>" + res[i].temperature +
+                        			 " " + res[i].unit + "</td>";
+                        			temperaturaGraf.push(res[i].temperature);
 						        }
 						        results += "</table>";
 						        $("#rezultatMeritveVitalnihZnakov").append(results);
+						        prikaziGraf(temperaturaGraf, 1);//tukej nej bi se pol izvedlo, da se prikaze graf al neki
 					    	} else {
 					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                    "<span class='obvestilo label label-warning fade-in'>" +
-                    "Ni podatkov!</span>");
+                    			"<span class='obvestilo label label-warning fade-in'>" +
+                				 "Ni podatkov!</span>");
 					    	}
 					    },
 					    error: function() {
 					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                  "<span class='obvestilo label label-danger fade-in'>Napaka '" +
-                  JSON.parse(err.responseText).userMessage + "'!");
+                			 "<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			 JSON.parse(err.responseText).userMessage + "'!");
 					    }
 					});
 				} else if (tip == "telesna teža") {
@@ -235,66 +241,24 @@ function preberiMeritveVitalnihZnakov() {
 					    success: function (res) {
 					    	if (res.length > 0) {
 						    	var results = "<table class='table table-striped " +
-                    "table-hover'><tr><th>Datum in ura</th>" +
-                    "<th class='text-right'>Telesna teža</th></tr>";
+                    			"table-hover'><tr><th>Datum in ura</th>" +
+                    			"<th class='text-right'>Telesna teža</th></tr>";
 						        for (var i in res) {
 						            results += "<tr><td>" + res[i].time +
-                          "</td><td class='text-right'>" + res[i].weight + " " 	+
+                        		"</td><td class='text-right'>" + res[i].weight + " " 	+
                           res[i].unit + "</td>";
 						        }
 						        results += "</table>";
 						        $("#rezultatMeritveVitalnihZnakov").append(results);
 					    	} else {
 					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                    "<span class='obvestilo label label-warning fade-in'>" +
-                    "Ni podatkov!</span>");
+                    			"<span class='obvestilo label label-warning fade-in'>" +
+                    			"Ni podatkov!</span>");
 					    	}
 					    },
 					    error: function() {
 					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                  "<span class='obvestilo label label-danger fade-in'>Napaka '" +
-                  JSON.parse(err.responseText).userMessage + "'!");
-					    }
-					});
-				} else if (tip == "telesna temperatura AQL") {
-					var AQL =
-						"select " +
-    						"t/data[at0002]/events[at0003]/time/value as cas, " +
-    						"t/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude as temperatura_vrednost, " +
-    						"t/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units as temperatura_enota " +
-						"from EHR e[e/ehr_id/value='" + ehrId + "'] " +
-						"contains OBSERVATION t[openEHR-EHR-OBSERVATION.body_temperature.v1] " +
-						"where t/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude<35 " +
-						"order by t/data[at0002]/events[at0003]/time/value desc " +
-						"limit 10";
-					$.ajax({
-					    url: baseUrl + "/query?" + $.param({"aql": AQL}),
-					    type: 'GET',
-					    headers: {"Ehr-Session": sessionId},
-					    success: function (res) {
-					    	var results = "<table class='table table-striped table-hover'>" +
-                  "<tr><th>Datum in ura</th><th class='text-right'>" +
-                  "Telesna temperatura</th></tr>";
-					    	if (res) {
-					    		var rows = res.resultSet;
-						        for (var i in rows) {
-						            results += "<tr><td>" + rows[i].cas +
-                          "</td><td class='text-right'>" +
-                          rows[i].temperatura_vrednost + " " 	+
-                          rows[i].temperatura_enota + "</td>";
-						        }
-						        results += "</table>";
-						        $("#rezultatMeritveVitalnihZnakov").append(results);
-					    	} else {
-					    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                    "<span class='obvestilo label label-warning fade-in'>" +
-                    "Ni podatkov!</span>");
-					    	}
-
-					    },
-					    error: function() {
-					    	$("#preberiMeritveVitalnihZnakovSporocilo").html(
-                  "<span class='obvestilo label label-danger fade-in'>Napaka '" +
+                			"<span class='obvestilo label label-danger fade-in'>Napaka '" +
                   JSON.parse(err.responseText).userMessage + "'!");
 					    }
 					});
@@ -302,8 +266,8 @@ function preberiMeritveVitalnihZnakov() {
 	    	},
 	    	error: function(err) {
 	    		$("#preberiMeritveVitalnihZnakovSporocilo").html(
-            "<span class='obvestilo label label-danger fade-in'>Napaka '" +
-            JSON.parse(err.responseText).userMessage + "'!");
+            	"<span class='obvestilo label label-danger fade-in'>Napaka '" +
+            	JSON.parse(err.responseText).userMessage + "'!");
 	    	}
 		});
 	}
@@ -554,5 +518,102 @@ function generirajRandomVnose(ehrIn) {
 
 }
 
+function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = tlak
+	if(tabelaPodatkov.length > 0){
+		var procenti = [];
+		var temperaturaZaPrikaz = [];
+		var salesData = [];
+		var grupePodatkov = [];
+		$('#legenda').html("");
+		$('#DonutGraf').html("");
+		if(tip == 1){//35.8 - 37.2  normalno za zdravega cloveka    42,8 °C, spodnja pa 27 °C   <-- smrtni meji
+			
+			var c1 = 0;//-
+			var c2 = 0;
+			var c3 = 0;//+
+			var je1 = false;//-
+			var je2 = false;
+			var je3 = false;//+
+			for(var i in tabelaPodatkov){
+				if(tabelaPodatkov[i] < 35.8) {
+					if(!je1){
+						je1 = !je1;
+					}
+					c1++;
+				} else if (tabelaPodatkov[i] > 37.2) {
+					if(!je3){
+						je3 = !je3;
+					}
+					c3++;
+				} else {
+					if(!je2){
+						je2 = !je2;
+					}
+					c2++;
+				}
+			}
+			grupePodatkov.push("Prenizka Temperatura");
+			grupePodatkov.push("Normalna Temperatura");
+			grupePodatkov.push("Povišana Temperatura");
+			var c4 = c1+c2+c3;
+			procenti.push(c1*100/c4);
+			console.log(c1*100/c4);
+			procenti.push(c2*100/c4);
+			console.log(c2*100/c4);
+			procenti.push(c3*100/c4);
+			console.log(c3*100/c4);
+		} else if(tip == 2) {
+			
+			
+		} else if (tip == 3) {
+			
+			
+		}
+		
+		for(i in procenti) {
+			if(procenti[i] > 0) {
+				if(procenti[i] == 100.00){
+					procenti[i] = 99.0;
+				}
+				var barva = getRandomColor();
+				var dataSales = {color: barva, value: procenti[i]};
+				salesData.push(dataSales);
+				var podatkiTemp = {color: barva, value: i};
+				temperaturaZaPrikaz.push(podatkiTemp);
+			}
+		}
+		
+		var htmlGraf = '<div class="pannel-heading">Graf izpisa</div><div class="panel-body"><div class="row"><span id="DonutGraf"></span><span id="legenda"></span></div></div>';
+		
+		$("grafLoc").html(htmlGraf);
+		
+		var svg = d3.select("#DonutGraf").append("svg").attr("width",700).attr("height",300);//change ID
+		svg.append("g").attr("id", "DataDonut");
+		Donut3D.draw("DataDonut", nakljucniPodatki(), 150, 150, 130, 100, 30, 0.4);
+		var dodano = "";
+		
+		
+		for(i in temperaturaZaPrikaz) {
+			dodano += "<tr><td style='color:white; background-color:"+ temperaturaZaPrikaz[i].color 
+			+ "'>" + grupePodatkov[temperaturaZaPrikaz[i].value] +
+            "</td>";
+		}
+		$('#legenda').html(dodano);
+		
+		function nakljucniPodatki(){
+		return salesData.map(function(d){ 
+			return {value:d.value, color:d.color};});
+		}
+	}
+}
+
+function getRandomColor() {//google is key
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 // TODO: Tukaj implementirate funkcionalnost, ki jo podpira vaša aplikacija
