@@ -125,7 +125,8 @@ function dodajMeritveVitalnihZnakov() {//#obvestila vnos
 	var diastolicniKrvniTlak = $("#dodajVitalnoKrvniTlakDiastolicni").val();
 	var nasicenostKrviSKisikom = $("#dodajVitalnoNasicenostKrviSKisikom").val();
 	var merilec = $("#dodajVitalnoMerilec").val();
-
+	$("#obvestilaVnos").html("");
+	$("#twitterFeed").html("");
 	if (!ehrId || ehrId.trim().length == 0) {
 		$("#dodajMeritveVitalnihZnakovSporocilo").html("<span class='obvestilo " +
       "label label-warning fade-in'>Prosim vnesite zahtevane podatke!</span>");
