@@ -583,10 +583,6 @@ function prikaziGraf(tabelaPodatkov, tip) {//tip 1 = temperatura, 2 = BMI, 3 = t
 			}
 		}
 		
-		var htmlGraf = '<div class="pannel-heading">Graf izpisa</div><div class="panel-body"><div class="row"><span id="DonutGraf"></span><span id="legenda"></span></div></div>';
-		
-		$("grafLoc").html(htmlGraf);
-		
 		var svg = d3.select("#DonutGraf").append("svg").attr("width",700).attr("height",300);//change ID
 		svg.append("g").attr("id", "DataDonut");
 		Donut3D.draw("DataDonut", nakljucniPodatki(), 150, 150, 130, 100, 30, 0.4);
